@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">MyFadhilStoryApp</string>
+
+
+    <string name="splash_desc">splash</string>
+    <string name="title">Story App</string>
+    <string name="belum_punya_akun">Not Have Account?</string>
+    <string name="example_description">Example Description</string>
+    <string name="example_name">Example Name</string>
+    <string name="new_story">New Story</string>
+    <string name="detail_story">Story Detail</string>
+
+
+    <string name="error_name">Name cannot be empty</string>
+    <string name="error_email">Email cannot be empty</string>
+    <string name="error_password">Password cannot be empty</string>
+    <string name="error_password_character">Password Minimum 8 Character  </string>
+
+
+    <string name="isLogin">STATUS</string>
+    <string name="token">TOKEN</string>
+    <string name="name">NAME</string>
+    <string name="placeholder">placeholder</string>
+    <string name="kamera">Camera</string>
+    <string name="galeri">Gallery</string>
+    <string name="email">Email</string>
+    <string name="deskripsi">Description</string>
+    <string name="upload">Upload</string>
+    <string name="format_email_worng">Email format incorrect</string>
+    <string name="appwidget_text">Image Story</string>
+    <string name="empty_text">empty</string>
+    <string name="tidak_ada_data">No Data</string>
+    <string name="setting">setting</string>
+    <string name="profil">Profile</string>
+    <string name="logout">Log Out</string>
+    <string name="masukkan_email_dan_password_anda">Submit Your Email and Password</string>
+    <string name="daftar">Register</string>
+    <string name="masukkan_data_diri_anda">Submit Your Personal Information</string>
+    <string name="nama_lengkap">Name</string>
+</resources>
