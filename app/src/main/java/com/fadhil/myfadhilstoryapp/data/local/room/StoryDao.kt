@@ -1,5 +1,6 @@
 package com.fadhil.myfadhilstoryapp.data.local.room
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,7 +13,10 @@ interface StoryDao {
     @Query("SELECT * FROM story" )
     suspend fun getStory():  List<StoryEntity>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Query("SELECT * FROM story" )
+    fun getAllStory():  PagingSource<Int,StoryEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStory(story: List<StoryEntity?> )
 
     @Query("DELETE FROM story")

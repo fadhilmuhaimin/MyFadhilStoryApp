@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.fadhil.myfadhilstoryapp.MainActivity
+import com.fadhil.myfadhilstoryapp.ui.MainActivity
 import com.fadhil.myfadhilstoryapp.R
 import com.fadhil.myfadhilstoryapp.databinding.FragmentSplashBinding
 import kotlinx.coroutines.delay

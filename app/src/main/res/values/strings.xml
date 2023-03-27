@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MyFadhilStoryApp</string>
+    <string name="map_id">b72e5db245c963d6</string>
 
 
     <string name="splash_desc">splash</string>
@@ -37,4 +38,12 @@
     <string name="daftar">Register</string>
     <string name="masukkan_data_diri_anda">Submit Your Personal Information</string>
     <string name="nama_lengkap">Name</string>
+    <string name="map">Map</string>
+
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="terrain_type">Terrain</string>
+    <string name="hybrid_type">Hybrid</string>
+    <string name="maps">Maps</string>
+    <string name="retry">retry</string>
 </resources>

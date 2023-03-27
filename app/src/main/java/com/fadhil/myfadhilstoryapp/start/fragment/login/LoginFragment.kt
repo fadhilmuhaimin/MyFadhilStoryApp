@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.fadhil.myfadhilstoryapp.MainActivity
+import com.fadhil.myfadhilstoryapp.ui.MainActivity
 import com.fadhil.myfadhilstoryapp.R
 import com.fadhil.myfadhilstoryapp.StoryViewModel
 import com.fadhil.myfadhilstoryapp.ViewModelFactory
@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
                     }
                     is CustomResult.Success -> {
                         binding.progress.visibility = View.VISIBLE
-                        startActivity(Intent(context,MainActivity::class.java))
+                        startActivity(Intent(context, MainActivity::class.java))
                         activity?.finish()
                         saveUserLoginState(true,data.data.loginResult)
                     }

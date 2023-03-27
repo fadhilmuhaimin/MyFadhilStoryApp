@@ -1,4 +1,4 @@
-package com.fadhil.myfadhilstoryapp
+package com.fadhil.myfadhilstoryapp.ui
 
 import android.Manifest
 import android.content.Intent
@@ -16,6 +16,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
+import com.fadhil.myfadhilstoryapp.R
+import com.fadhil.myfadhilstoryapp.StoryViewModel
+import com.fadhil.myfadhilstoryapp.ViewModelFactory
 import com.fadhil.myfadhilstoryapp.data.CustomResult
 import com.fadhil.myfadhilstoryapp.databinding.ActivityAddBinding
 import com.fadhil.myfadhilstoryapp.tools.createCustomTempFile
@@ -179,7 +182,7 @@ class AddActivity : AppCompatActivity() {
 
                          is CustomResult.Success -> {
                              binding.progress.visibility = View.GONE
-                             startActivity(Intent(this@AddActivity,MainActivity::class.java))
+                             startActivity(Intent(this@AddActivity, MainActivity::class.java))
                              finishAffinity()
 
                          }

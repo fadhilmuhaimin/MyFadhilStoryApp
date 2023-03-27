@@ -25,7 +25,12 @@ interface ApiService {
     ) : Auth
 
     @GET("stories")
-    suspend fun getAllStories(@Header("Authorization") token: String) : Story
+    suspend fun getAllStories(
+        @Header("Authorization") token: String,
+        @Query("location") location: Int,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ) : Story
 
 
     @Multipart

@@ -7,19 +7,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
 import com.fadhil.myfadhilstoryapp.data.remote.response.ListStoryItem
 import com.fadhil.myfadhilstoryapp.databinding.ItemListBinding
 import com.fadhil.myfadhilstoryapp.detail.DetailActivity
 
-class StoryAdapter() : ListAdapter<ListStoryItem, StoryAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class StoryAdapter() : PagingDataAdapter<StoryEntity, StoryAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     class MyViewHolder(val binding: ItemListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ListStoryItem) {
+        fun bind(item: StoryEntity) {
             binding.tvItemName.text = item.name
             binding.tvItemDescription.text = item.description
             Glide.with(itemView.context)
@@ -48,19 +50,19 @@ class StoryAdapter() : ListAdapter<ListStoryItem, StoryAdapter.MyViewHolder>(DIF
 
 
     companion object {
-        val DIFF_CALLBACK: DiffUtil.ItemCallback<ListStoryItem> =
-            object : DiffUtil.ItemCallback<ListStoryItem>() {
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<StoryEntity> =
+            object : DiffUtil.ItemCallback<StoryEntity>() {
                 override fun areItemsTheSame(
-                    oldUser: ListStoryItem,
-                    newUser: ListStoryItem
+                    oldUser: StoryEntity,
+                    newUser: StoryEntity
                 ): Boolean {
                     return oldUser.id == newUser.id
                 }
 
                 @SuppressLint("DiffUtilEquals")
                 override fun areContentsTheSame(
-                    oldUser: ListStoryItem,
-                    newUser: ListStoryItem
+                    oldUser: StoryEntity,
+                    newUser: StoryEntity
                 ): Boolean {
                     return oldUser == newUser
                 }
@@ -74,6 +76,6 @@ class StoryAdapter() : ListAdapter<ListStoryItem, StoryAdapter.MyViewHolder>(DIF
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val user = getItem(position)
-        holder.bind(user)
+        user?.let { holder.bind(it) }
     }
 }

@@ -15,4 +15,11 @@
         android:icon="@drawable/baseline_account_circle_24"
         android:iconTint="@android:color/white"/>
 
+    <item
+        android:id="@+id/nav_map"
+        android:title="@string/map"
+        app:showAsAction="always"
+        android:icon="@drawable/map"
+        android:iconTint="@color/white"/>
+
 </menu>
