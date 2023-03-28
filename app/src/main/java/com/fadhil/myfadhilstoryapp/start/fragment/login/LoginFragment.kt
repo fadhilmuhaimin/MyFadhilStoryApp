@@ -12,13 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.fadhil.myfadhilstoryapp.ui.MainActivity
 import com.fadhil.myfadhilstoryapp.R
 import com.fadhil.myfadhilstoryapp.StoryViewModel
 import com.fadhil.myfadhilstoryapp.ViewModelFactory
 import com.fadhil.myfadhilstoryapp.data.CustomResult
 import com.fadhil.myfadhilstoryapp.data.remote.response.LoginResult
 import com.fadhil.myfadhilstoryapp.databinding.FragmentLoginBinding
+import com.fadhil.myfadhilstoryapp.ui.MainActivity
 
 
 class LoginFragment : Fragment() {
@@ -31,7 +31,7 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentLoginBinding.inflate(layoutInflater)
 
         binding.btLogin.setOnClickListener {

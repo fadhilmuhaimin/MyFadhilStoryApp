@@ -7,22 +7,16 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.paging.map
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fadhil.myfadhilstoryapp.*
-import com.fadhil.myfadhilstoryapp.data.CustomResult
-import com.fadhil.myfadhilstoryapp.data.remote.response.ListStoryItem
 import com.fadhil.myfadhilstoryapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var data : ArrayList<ListStoryItem>
 
     private val viewModel by viewModels<StoryViewModel> {
         ViewModelFactory.getInstance(application)
@@ -49,38 +43,6 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(Intent(this, AddActivity::class.java))
         }
-
-
-
-
-//        token?.let { token ->
-//            viewModel.getAllStory("bearer $token",1).observe(this) { result ->
-//                if (result != null) {
-//                    when (result) {
-//                        is CustomResult.Loading -> {
-//                            binding.progress.visibility = View.VISIBLE
-//
-//                        }
-//                        is CustomResult.Error -> {
-//                            binding.progress.visibility = View.GONE
-//                            binding.ivNodata.visibility = View.VISIBLE
-//                            binding.tvNodata.visibility = View.VISIBLE
-//
-//                            Log.e(TAG, "onCreates: ${result.error}  apa $token")
-//                            Toast.makeText(this, "Gagal Memuat Data", Toast.LENGTH_SHORT).show()
-//
-//                        }
-//                        is CustomResult.Success -> {
-//                            binding.progress.visibility = View.GONE
-//                            storyAdapter.submitList(result.data)
-//                            data = result.data as ArrayList<ListStoryItem>
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
-
 
 
     }
@@ -123,10 +85,8 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, ProfileActvity::class.java))
             }
             R.id.nav_map -> {
-                if (!data.isEmpty()){
-                    startActivity(Intent(this,MapsActivity::class.java)
-                        .putExtra(MapsActivity.DATA,data))
-                }
+                startActivity(Intent(this,MapsActivity::class.java))
+
 
             }
 

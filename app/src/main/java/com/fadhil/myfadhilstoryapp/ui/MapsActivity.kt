@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -12,15 +11,20 @@ import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
 import com.fadhil.myfadhilstoryapp.R
-import com.fadhil.myfadhilstoryapp.data.remote.response.ListStoryItem
+import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
+import com.fadhil.myfadhilstoryapp.data.local.room.StoryDao
+import com.fadhil.myfadhilstoryapp.data.local.room.StoryDatabase
 import com.fadhil.myfadhilstoryapp.databinding.ActivityMapsBinding
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.util.*
 
@@ -29,8 +33,9 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private var token : String? = null
-    private lateinit var data : ArrayList<ListStoryItem>
+
+    private var items = listOf<StoryEntity>()
+    private lateinit var dao : StoryDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +48,22 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
             finish()
         }
 
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        token = pref.getString(getString(R.string.token), "")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            data = intent.extras?.getParcelableArrayList(DATA,ListStoryItem::class.java)!!
-        }
+        dao = StoryDatabase.getInstance(this).storyDao()
+        getData()
+
+
+
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+    }
 
-
-
+    private fun getData() {
+        runBlocking {
+            items = dao.getStory()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -142,7 +150,7 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
     private val boundsBuilder = LatLngBounds.Builder()
 
     private fun addManyMarker( ) {
-        data.forEach {data ->
+        items.forEach {data ->
             val latLng = data.lat?.let { lat ->
                 data.lon?.let { lon ->
                     LatLng(lat, lon)
@@ -193,7 +201,7 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
 
     companion object {
         private const val TAG = "MapsActivity"
-        const val DATA = "data"
+
     }
 
 }

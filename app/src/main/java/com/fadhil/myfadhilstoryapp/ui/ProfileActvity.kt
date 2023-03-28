@@ -21,6 +21,10 @@ class ProfileActvity : AppCompatActivity() {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val name = pref.getString(getString(R.string.name),  "")
         val editor = pref.edit()
+        binding.toolbarDetail.setNavigationOnClickListener {
+            finish()
+        }
+
 
         binding.tvName.text = name
         binding.btLogout.setOnClickListener {

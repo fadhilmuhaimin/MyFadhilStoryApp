@@ -9,12 +9,10 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
-import com.fadhil.myfadhilstoryapp.data.remote.response.ListStoryItem
 import com.fadhil.myfadhilstoryapp.databinding.ItemListBinding
 import com.fadhil.myfadhilstoryapp.detail.DetailActivity
 

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.fadhil.myfadhilstoryapp.R
-import com.fadhil.myfadhilstoryapp.data.remote.response.ListStoryItem
+import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
 import com.fadhil.myfadhilstoryapp.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
@@ -16,9 +16,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
-        val data =  intent.getParcelableExtra(KEY_DETAIL,ListStoryItem::class.java)
-
-
+        val data =  intent.getParcelableExtra(KEY_DETAIL,StoryEntity::class.java)
 
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()

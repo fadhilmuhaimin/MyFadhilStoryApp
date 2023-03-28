@@ -1,6 +1,5 @@
 package com.fadhil.myfadhilstoryapp
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

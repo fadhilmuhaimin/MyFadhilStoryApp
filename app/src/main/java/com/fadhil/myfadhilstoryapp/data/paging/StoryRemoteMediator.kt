@@ -4,10 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.preference.PreferenceManager
 import androidx.room.withTransaction
-import com.fadhil.myfadhilstoryapp.R
-import com.fadhil.myfadhilstoryapp.StoryAdapter
 import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
 import com.fadhil.myfadhilstoryapp.data.local.room.RemoteKeys
 import com.fadhil.myfadhilstoryapp.data.local.room.StoryDatabase
@@ -66,7 +63,7 @@ class StoryRemoteMediator(
 
                 val prevKey = if (page == 1) null else page - 1
                 val nextKey = if (endOfPaginationReached!!) null else page.plus(1)
-                val keys = resposeData.listStory?.map { list ->
+                val keys = resposeData.listStory.map { list ->
                     list?.id?.let { id ->
                         RemoteKeys(id = id, prevKey = prevKey, nextKey = nextKey)
                     }
