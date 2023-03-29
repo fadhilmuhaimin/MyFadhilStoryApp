@@ -1,17 +1,18 @@
 package com.fadhil.myfadhilstoryapp.ui
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
-import com.fadhil.myfadhilstoryapp.*
+import com.fadhil.myfadhilstoryapp.R
+import com.fadhil.myfadhilstoryapp.StoryViewModel
+import com.fadhil.myfadhilstoryapp.ViewModelFactory
+import com.fadhil.myfadhilstoryapp.adapter.LoadingStateAdapter
+import com.fadhil.myfadhilstoryapp.adapter.StoryAdapter
 import com.fadhil.myfadhilstoryapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -30,13 +31,6 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.title = ""
         setSupportActionBar(binding.toolbar)
         getData()
-
-
-
-
-
-
-
 
 
         binding.fabAdd.setOnClickListener {
@@ -61,10 +55,6 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.story.observe(this){
             storyAdapter.submitData(lifecycle,it)
-
-            it.map {story ->
-                Log.d(TAG, "getDataapakah: $story")
-            }
         }
 
 

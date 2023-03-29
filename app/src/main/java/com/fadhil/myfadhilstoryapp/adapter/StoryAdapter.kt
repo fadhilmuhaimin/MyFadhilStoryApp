@@ -1,4 +1,4 @@
-package com.fadhil.myfadhilstoryapp
+package com.fadhil.myfadhilstoryapp.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.fadhil.myfadhilstoryapp.R
 import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
 import com.fadhil.myfadhilstoryapp.databinding.ItemListBinding
 import com.fadhil.myfadhilstoryapp.detail.DetailActivity

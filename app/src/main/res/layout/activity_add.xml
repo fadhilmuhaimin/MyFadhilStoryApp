@@ -124,6 +124,25 @@
         android:indeterminateTint="@color/primary"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/layout_desc"
+        app:layout_constraintTop_toBottomOf="@id/layout_desc"
+        android:layout_marginTop="@dimen/_16dp"
+        style="@style/titleMedium12Black"
+        android:text="@string/share_location_optional"
+        />
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/layout_desc"
+        app:layout_constraintTop_toTopOf="@id/tv_location"
+        app:layout_constraintBottom_toBottomOf="@id/tv_location"
+         />
+
 
 
 

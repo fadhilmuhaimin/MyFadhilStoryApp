@@ -22,59 +22,60 @@ import okhttp3.RequestBody
 
 
 class Repository private constructor(
-        private val apiService: ApiService,
-        private val storyDatabase: StoryDatabase
-){
+    private val apiService: ApiService,
+    private val storyDatabase: StoryDatabase
+) {
     private val _responseRegister = MutableLiveData<Auth>()
-    private val responseRegister : LiveData<Auth> =_responseRegister
+
 
     private val _responseUpload = MutableLiveData<Auth>()
-    private val responseUpload : LiveData<Auth> =_responseUpload
 
-    fun uploadStory(  token : String, file : MultipartBody.Part, desc : RequestBody)= liveData  {
+
+    private val _responseLocation = MutableLiveData<List<StoryEntity>>()
+
+
+    fun uploadStory(token: String, file: MultipartBody.Part, desc: RequestBody, lat : Double?, lon : Double?) = liveData {
         emit(CustomResult.Loading)
         try {
-            val response = apiService.uploadStory( token,file,desc)
-
+            val response = apiService.uploadStory(token, file, desc,lat,lon)
             _responseUpload.value = response
 
-        }catch (e : Exception){
+        } catch (e: Exception) {
             emit(CustomResult.Error(e.message.toString()))
             Log.e(TAG, "uploadStory: , ${e.message}")
         }
 
-        val data : LiveData<CustomResult<Auth>> = responseUpload.map { CustomResult.Success(it) }
+        val data: LiveData<CustomResult<Auth>> = _responseUpload.map { CustomResult.Success(it) }
         emitSource(data)
     }
 
 
-
-    fun registerUser(name : String?, email : String?, password : String? )  = liveData {
+    fun registerUser(name: String?, email: String?, password: String?) = liveData {
         emit(CustomResult.Loading)
         try {
-            val response = apiService.registerUser(name, email,password)
+            val response = apiService.registerUser(name, email, password)
             _responseRegister.value = response
-        }catch (e : Exception){
+        } catch (e: Exception) {
             emit(CustomResult.Error(e.message.toString()))
         }
-        val data : LiveData<CustomResult<Auth>> = responseRegister.map { CustomResult.Success(it) }
+        val data: LiveData<CustomResult<Auth>> = _responseRegister.map { CustomResult.Success(it) }
         emitSource(data)
     }
 
-    fun loginUser(email : String?, password : String? )  = liveData {
+    fun loginUser(email: String?, password: String?) = liveData {
         emit(CustomResult.Loading)
         try {
-            val response = apiService.loginUser(email,password)
+            val response = apiService.loginUser(email, password)
             _responseRegister.value = response
-        }catch (e : Exception){
+        } catch (e: Exception) {
             emit(CustomResult.Error(e.message.toString()))
         }
-        val data : LiveData<CustomResult<Auth>> = responseRegister.map { CustomResult.Success(it) }
+        val data: LiveData<CustomResult<Auth>> = _responseRegister.map { CustomResult.Success(it) }
         emitSource(data)
     }
 
 
-    fun getStoryWithMediator(context: Context) : LiveData<PagingData<StoryEntity>>{
+    fun getStoryWithMediator(context: Context): LiveData<PagingData<StoryEntity>> {
 
         val pref = PreferenceManager.getDefaultSharedPreferences(context)
         val token = pref.getString(context.getString(R.string.token), "")
@@ -84,7 +85,8 @@ class Repository private constructor(
                 pageSize = 5
             ),
             remoteMediator = token?.let {
-                StoryRemoteMediator(database = storyDatabase,apiService,
+                StoryRemoteMediator(
+                    database = storyDatabase, apiService,
                     it
                 )
             },
@@ -92,6 +94,19 @@ class Repository private constructor(
                 storyDatabase.storyDao().getAllStory()
             }
         ).liveData
+    }
+    fun getStoryWithLocation(token: String)= liveData  {
+        emit(CustomResult.Loading)
+        try {
+            val result = apiService.getAllStories( token, 1 ,null,null)
+            _responseLocation.value = result.listStory as List<StoryEntity>?
+        }catch (e :Exception){
+            emit(CustomResult.Error(e.message.toString()))
+        }
+
+        val data: LiveData<CustomResult<List<StoryEntity>>> = _responseLocation.map { CustomResult.Success(it) }
+        emitSource(data)
+
     }
 
 
@@ -104,7 +119,7 @@ class Repository private constructor(
             storyDatabase: StoryDatabase
         ): Repository =
             instance ?: synchronized(this) {
-                instance ?: Repository(apiService,storyDatabase)
+                instance ?: Repository(apiService, storyDatabase)
             }.also { instance = it }
     }
 

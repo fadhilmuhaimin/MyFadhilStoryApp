@@ -8,13 +8,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.fadhil.myfadhilstoryapp.R
-import com.fadhil.myfadhilstoryapp.data.local.entity.StoryEntity
-import com.fadhil.myfadhilstoryapp.data.local.room.StoryDao
-import com.fadhil.myfadhilstoryapp.data.local.room.StoryDatabase
+import com.fadhil.myfadhilstoryapp.StoryViewModel
+import com.fadhil.myfadhilstoryapp.ViewModelFactory
+import com.fadhil.myfadhilstoryapp.data.CustomResult
 import com.fadhil.myfadhilstoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,18 +28,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.util.*
 
 
-class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
-    private var items = listOf<StoryEntity>()
-    private lateinit var dao : StoryDao
+    private val viewModel by viewModels<StoryViewModel> {
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,22 +51,65 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
         }
-
-        dao = StoryDatabase.getInstance(this).storyDao()
-        getData()
-
-
-
-
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
     }
 
-    private fun getData() {
-        runBlocking {
-            items = dao.getStory()
+    private fun getData( ) {
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val token = pref.getString(this.getString(R.string.token), "")
+        token?.let { viewModel.getLocation("bearer $it").observe(this){ result ->
+            when (result) {
+                is CustomResult.Loading -> {
+                    binding.progress.visibility = View.VISIBLE
+                }
+                is CustomResult.Success -> {
+                    binding.progress.visibility = View.GONE
+                    result.data.forEach {storyEntity ->
+                        val latLng = storyEntity.lat?.let { lat ->
+                            storyEntity.lon?.let { lon ->
+                                LatLng(lat, lon)
+                            }
+                        }
+                        val addressName =  storyEntity.lat?.let { lat ->
+                            storyEntity.lon?.let { lon ->
+                                getAddressName(lat, lon)
+                            }
+                        }
+                        latLng?.let { latlng ->
+                            MarkerOptions().position(latlng).title(storyEntity.name).snippet(addressName)
+                        }
+                            ?.let { markerOption ->
+                                mMap.addMarker(markerOption)
+                            }
+                        if (latLng != null) {
+                            boundsBuilder.include(latLng)
+                        }
+                        val bounds: LatLngBounds = boundsBuilder.build()
+                        mMap.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(
+                                bounds,
+                                resources.displayMetrics.widthPixels,
+                                resources.displayMetrics.heightPixels,
+                                300
+                            )
+                        )
+                    }
+                }
+                is CustomResult.Error -> {
+                    binding.progress.visibility = View.GONE
+                    Toast.makeText(
+                        this,
+                        "Terjadi kesalahan" + result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+
+        }
         }
     }
 
@@ -77,7 +124,7 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
 
         getMyLocation()
         setMapStyle()
-        addManyMarker()
+        getData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -108,7 +155,6 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
             }
         }
     }
-
 
 
     private val requestPermissionLauncher =
@@ -149,40 +195,6 @@ class MapsActivity : AppCompatActivity() , OnMapReadyCallback {
 
     private val boundsBuilder = LatLngBounds.Builder()
 
-    private fun addManyMarker( ) {
-        items.forEach {data ->
-            val latLng = data.lat?.let { lat ->
-                data.lon?.let { lon ->
-                    LatLng(lat, lon)
-                }
-            }
-            val addressName = data.lat?.let {lat  ->
-                data.lon?.let { lon ->
-                    getAddressName(lat , lon)
-                }
-            }
-            latLng?.let {latlng ->
-                MarkerOptions().position(latlng).title(data.name).snippet(addressName)
-            }
-                ?.let { markerOption ->
-                    mMap.addMarker(markerOption)
-                }
-            if (latLng != null) {
-                boundsBuilder.include(latLng)
-            }
-        }
-
-        val bounds: LatLngBounds = boundsBuilder.build()
-        mMap.animateCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                bounds,
-                resources.displayMetrics.widthPixels,
-                resources.displayMetrics.heightPixels,
-                300
-            )
-        )
-
-    }
 
     private fun getAddressName(lat: Double, lon: Double): String? {
         var addressName: String? = null

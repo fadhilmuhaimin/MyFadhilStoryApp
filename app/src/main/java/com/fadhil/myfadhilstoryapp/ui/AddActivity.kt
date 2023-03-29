@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -24,6 +25,8 @@ import com.fadhil.myfadhilstoryapp.databinding.ActivityAddBinding
 import com.fadhil.myfadhilstoryapp.tools.createCustomTempFile
 import com.fadhil.myfadhilstoryapp.tools.reduceFileImage
 import com.fadhil.myfadhilstoryapp.tools.uriToFile
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -33,8 +36,9 @@ import java.io.File
 
 class AddActivity : AppCompatActivity() {
     private lateinit var currentPhotoPath: String
-    private lateinit var binding : ActivityAddBinding
+    private lateinit var binding: ActivityAddBinding
     private var getFile: File? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val viewModel by viewModels<StoryViewModel> {
         ViewModelFactory.getInstance(application)
     }
@@ -62,21 +66,83 @@ class AddActivity : AppCompatActivity() {
         binding.btPickGallery.setOnClickListener {
             startGallery()
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
 
 
 
         binding.btUpload.setOnClickListener {
-            viewModel.description =  binding.edDesc.text.toString()
-            if (viewModel.description!!.isNotEmpty()){
+            viewModel.description = binding.edDesc.text.toString()
+            if (viewModel.description!!.isNotEmpty()) {
                 uploadImage(viewModel.description!!)
-            }else{
+            } else {
                 Toast.makeText(this, "Isi Deskripsi Terlebih Dahulu", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.switchLocation.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                getMyLastLocation()
+            }else{
+                viewModel.latitude.value = null
+                viewModel.longitude.value = null
             }
         }
 
 
     }
 
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun getMyLastLocation() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    viewModel.latitude.value = location.latitude
+                    viewModel.longitude.value = location.longitude
+                } else {
+                    Toast.makeText(
+                        this@AddActivity,
+                        "Location is not found. Try Again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    // Precise location access granted.
+                    getMyLastLocation()
+                }
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    // Only approximate location access granted.
+                    getMyLastLocation()
+                }
+                else -> {
+                    // No location access granted.
+                }
+            }
+        }
 
 
     private val launcherIntentCamera = registerForActivityResult(
@@ -86,7 +152,7 @@ class AddActivity : AppCompatActivity() {
             val myFile = File(currentPhotoPath)
             getFile = myFile
 
-            val result =  BitmapFactory.decodeFile(myFile.path)
+            val result = BitmapFactory.decodeFile(myFile.path)
             binding.ivAddPhoto.setImageBitmap(result)
         }
     }
@@ -97,7 +163,7 @@ class AddActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val selectedImg: Uri = result.data?.data as Uri
-            val myFile = uriToFile(selectedImg, this )
+            val myFile = uriToFile(selectedImg, this)
             getFile = myFile
             binding.ivAddPhoto.setImageURI(selectedImg)
         }
@@ -140,7 +206,7 @@ class AddActivity : AppCompatActivity() {
 
         createCustomTempFile(application).also {
             val photoURI: Uri = FileProvider.getUriForFile(
-                this ,
+                this,
                 "com.fadhil.myfadhilstoryapp",
                 it
             )
@@ -149,6 +215,7 @@ class AddActivity : AppCompatActivity() {
             launcherIntentCamera.launch(intent)
         }
     }
+
     private fun uploadImage(desc: String) {
         if (getFile != null) {
             val pref = PreferenceManager.getDefaultSharedPreferences(this@AddActivity)
@@ -163,42 +230,43 @@ class AddActivity : AppCompatActivity() {
                 requestImageFile
             )
             viewModel.uploadStory(
-
                 "Bearer $token",
                 imageMultipart,
-                description
-                 ).observe(this) { result ->
-                     when(result){
-                         is CustomResult.Loading -> {
+                description,
+                viewModel.latitude.value,
+                viewModel.longitude.value
+            ).observe(this) { result ->
+                when (result) {
+                    is CustomResult.Loading -> {
 
-                             binding.progress.visibility = View.VISIBLE
+                        binding.progress.visibility = View.VISIBLE
 
-                         }
-                         is CustomResult.Error -> {
-                             binding.progress.visibility = View.GONE
-                             Toast.makeText(this@AddActivity, "Gagal mengupload", Toast.LENGTH_SHORT).show()
+                    }
+                    is CustomResult.Error -> {
+                        binding.progress.visibility = View.GONE
+                        Toast.makeText(this@AddActivity, "Gagal mengupload", Toast.LENGTH_SHORT)
+                            .show()
 
-                         }
+                    }
 
-                         is CustomResult.Success -> {
-                             binding.progress.visibility = View.GONE
-                             startActivity(Intent(this@AddActivity, MainActivity::class.java))
-                             finishAffinity()
+                    is CustomResult.Success -> {
+                        binding.progress.visibility = View.GONE
+                        startActivity(Intent(this@AddActivity, MainActivity::class.java))
+                        finishAffinity()
 
-                         }
-                     }
-                 }
-
-
-
-
+                    }
+                }
+            }
 
 
         } else {
-            Toast.makeText(this , "Silakan masukkan berkas gambar terlebih dahulu.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Silakan masukkan berkas gambar terlebih dahulu.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
-
 
 
     companion object {

@@ -21,7 +21,6 @@ class DetailActivity : AppCompatActivity() {
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
         }
-
         binding.tvDetailName.text = data?.name
         binding.tvDetailDescription.text = data?.description
         Glide.with(this)
