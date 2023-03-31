@@ -67,8 +67,12 @@ class FakeApiService : ApiService {
 
     }
 
-
-    override suspend fun getAllStories(token: String, location: Int, page: Int, size: Int): Story {
+    override suspend fun getAllStories(
+        token: String,
+        location: Int,
+        page: Int?,
+        size: Int?
+    ): Story {
         val items: MutableList<StoryEntity> = arrayListOf()
         for (i in 0..100) {
             val quote = StoryEntity(
@@ -89,8 +93,14 @@ class FakeApiService : ApiService {
     override suspend fun uploadStory(
         token: String,
         file: MultipartBody.Part,
-        description: RequestBody
+        description: RequestBody,
+        lat: Double?,
+        lon: Double?
     ): Auth {
         return Auth(null,false,"")
+
     }
+
+
+
 }

@@ -16,7 +16,9 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
-        val data =  intent.getParcelableExtra(KEY_DETAIL,StoryEntity::class.java)
+        val data =  if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            intent.getParcelableExtra(KEY_DETAIL, StoryEntity::class.java)
+        }else intent.getParcelableExtra(KEY_DETAIL)
 
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
